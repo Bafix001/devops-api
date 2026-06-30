@@ -1,0 +1,26 @@
+- hosts: servers
+  become: yes
+
+  tasks:
+    - name: clone or update repo
+      git:
+        repo: https://github.com/Bafix001/devops-api.git
+        dest: /root/devops-api
+        version: main
+
+    - name: stop container
+      command: docker stop devops-api
+      ignore_errors: yes
+
+    - name: remove container
+      command: docker rm devops-api
+      ignore_errors: yes
+
+    - name: build container
+      command: docker build -t devops-api -f infra/Dockerfile .
+      args:
+        chdir: /root/devops-api
+
+    - name: run container
+      command: docker run -d --name devops-api -p 3000:3000 devops-api
+``
